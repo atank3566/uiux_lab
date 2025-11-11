@@ -142,9 +142,9 @@ class Scene3D {
     // 횡단보도 생성 (90도 회전: 차량 진행 방향과 평행하게)
     // 차량은 z축 방향으로 이동하므로, 횡단보도 줄무늬도 z축 방향으로 길게
     const roadWidth = 6; // 도로 폭 (x축 방향)
-    const stripeWidth = 0.1; // 각 흰 줄무늬의 폭 (x축 방향)
+    const stripeWidth = 0.7; // 각 흰 줄무늬의 폭 (x축 방향)
     const stripeSpacing = 0.5; // 줄무늬 간격 (x축 방향)
-    const stripeCount = 16; // 흰 줄무늬 개수
+    const stripeCount = 6; // 흰 줄무늬 개수
     const crosswalkZ = 6; // 횡단보도 중심 위치 (카메라 앞, z축)
     const crosswalkLength = 2; // 횡단보도 길이 (z축 방향, 차량 진행 방향)
     

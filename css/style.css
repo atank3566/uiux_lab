@@ -11,7 +11,8 @@ body {
 /* 소개 화면 */
 .intro-container {
   max-width: 800px;
-  margin: 0 auto;
+  margin: 0;
+  text-align: center;
   padding: 40px;
   background-color: white;
   border-radius: 10px;
@@ -33,7 +34,7 @@ body {
 
 .intro-content h3 {
   color: #555;
-  margin-top: 20px;
+  margin-top: 40px;
 }
 
 .intro-content ol,
@@ -43,13 +44,14 @@ body {
 }
 
 .intro-content li {
-  margin: 10px 0;
+  margin: 10px 100px;
+  text-align: left;
 }
 
 .warning-text {
   color: #e74c3c;
   font-weight: bold;
-  margin-top: 20px;
+  margin-top: 40px;
   padding: 15px;
   background-color: #ffe6e6;
   border-left: 4px solid #e74c3c;

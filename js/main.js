@@ -5,7 +5,7 @@
 
 // 실험 시작 전 소개 화면
 const intro_trial = {
-  type: 'html-keyboard-response',
+  type: jsPsychHtmlKeyboardResponse,
   stimulus: `
     <div class="intro-container">
       <h1>자율주행차 eHMI 시나리오 실험</h1>
@@ -39,7 +39,7 @@ const intro_trial = {
 
 // 실험 종료 화면
 const end_trial = {
-  type: 'html-keyboard-response',
+  type: jsPsychHtmlKeyboardResponse,
   stimulus: `
     <div class="end-container">
       <h1>실험이 종료되었습니다</h1>
@@ -65,10 +65,17 @@ const timeline = [
 ];
 
 // 실험 시작
-if (EXPERIMENT_CONFIG.DEBUG) {
-  console.log('실험 타임라인:', timeline);
-  console.log('시나리오 개수:', eHMI_SCENARIOS.length);
+// 플러그인이 로드되었는지 확인 후 실험 시작
+if (typeof jsPsychHtmlKeyboardResponse === 'undefined') {
+  console.error('플러그인이 로드되지 않았습니다!');
+  document.getElementById('jspsych-experiment').innerHTML = 
+    '<div style="padding: 50px; text-align: center;"><h1>오류 발생</h1><p>플러그인이 로드되지 않았습니다. 페이지를 새로고침해주세요.</p></div>';
+} else {
+  if (EXPERIMENT_CONFIG.DEBUG) {
+    console.log('실험 타임라인:', timeline);
+    console.log('시나리오 개수:', eHMI_SCENARIOS.length);
+  }
+  
+  jsPsych.run(timeline);
 }
-
-jsPsych.run(timeline);
 

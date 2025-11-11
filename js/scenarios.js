@@ -50,7 +50,7 @@ const eHMI_SCENARIOS = [
  */
 function createScenarioTrial(scenario) {
   return {
-    type: 'html-keyboard-response',
+    type: jsPsychHtmlKeyboardResponse,
     stimulus: `
       <div class="scenario-container">
         <h2 class="scenario-title">${scenario.title}</h2>
@@ -84,7 +84,7 @@ function createScenarioTrial(scenario) {
  */
 function createRatingTrial(scenario) {
   return {
-    type: 'html-keyboard-response',
+    type: jsPsychHtmlKeyboardResponse,
     stimulus: `
       <div class="rating-container">
         <h3>평가 문항</h3>

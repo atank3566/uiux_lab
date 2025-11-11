@@ -17,7 +17,7 @@ class Scene3D {
     this.obstacle = null;
     this.emergencyVehicle = null;
     this.animationFrame = null;
-    this.vehiclePosition = { x: 0, y: 0, z: -15 }; // 멀리서 다가옴
+    this.vehiclePosition = { x: 0, y: 0, z: -20 }; // 멀리서 다가옴
     this.vehicleSpeed = 0.15;
     this.isAnimating = false;
   }
@@ -28,8 +28,8 @@ class Scene3D {
 
     // 장면 생성
     this.scene = new THREE.Scene();
-    this.scene.background = new THREE.Color(0x87CEEB); // 하늘색
-    this.scene.fog = new THREE.Fog(0x87CEEB, 10, 50);
+    this.scene.background = new THREE.Color(0x1a1a2e); // 밤하늘 색상
+    this.scene.fog = new THREE.Fog(0x1a1a2e, 5, 30);
 
     // 카메라 설정 (보행자 시점: 횡단보도 옆에서 차량을 바라보는 시점)
     this.camera = new THREE.PerspectiveCamera(
@@ -39,8 +39,9 @@ class Scene3D {
       1000
     );
     // 보행자 시점: 횡단보도 옆, 약간 높은 위치에서 차량을 바라봄
-    this.camera.position.set(-3, 1.6, 8);
-    this.camera.lookAt(0, 0, 0);
+    this.camera.position.set(-3, 1.6, 6);
+    // 횡단보도 앞쪽을 바라봄
+    this.camera.lookAt(0, 0, 2);
 
     // 렌더러 설정
     this.renderer = new THREE.WebGLRenderer({ antialias: true });
@@ -73,23 +74,33 @@ class Scene3D {
   }
 
   setupLights() {
-    // 환경광
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+    // 밤 장면을 위한 조명 설정
+    // 환경광 (어둡게)
+    const ambientLight = new THREE.AmbientLight(0x404040, 0.3);
     this.scene.add(ambientLight);
 
-    // 방향광
-    const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
-    directionalLight.position.set(5, 10, 5);
-    directionalLight.castShadow = true;
-    directionalLight.shadow.mapSize.width = 2048;
-    directionalLight.shadow.mapSize.height = 2048;
-    directionalLight.shadow.camera.near = 0.5;
-    directionalLight.shadow.camera.far = 50;
-    directionalLight.shadow.camera.left = -10;
-    directionalLight.shadow.camera.right = 10;
-    directionalLight.shadow.camera.top = 10;
-    directionalLight.shadow.camera.bottom = -10;
-    this.scene.add(directionalLight);
+    // 달빛 (차가운 푸른색)
+    const moonLight = new THREE.DirectionalLight(0x8b9dc3, 0.5);
+    moonLight.position.set(5, 10, 5);
+    moonLight.castShadow = true;
+    moonLight.shadow.mapSize.width = 2048;
+    moonLight.shadow.mapSize.height = 2048;
+    moonLight.shadow.camera.near = 0.5;
+    moonLight.shadow.camera.far = 50;
+    moonLight.shadow.camera.left = -10;
+    moonLight.shadow.camera.right = 10;
+    moonLight.shadow.camera.top = 10;
+    moonLight.shadow.camera.bottom = -10;
+    this.scene.add(moonLight);
+
+    // 가로등 조명 (횡단보도 주변)
+    const streetLight1 = new THREE.PointLight(0xffd700, 1, 15);
+    streetLight1.position.set(-5, 4, 2);
+    this.scene.add(streetLight1);
+
+    const streetLight2 = new THREE.PointLight(0xffd700, 1, 15);
+    streetLight2.position.set(5, 4, 2);
+    this.scene.add(streetLight2);
   }
 
   createRoad() {
@@ -127,15 +138,40 @@ class Scene3D {
   }
 
   createCrosswalk() {
-    // 횡단보도 생성 (도로 중앙)
-    const crosswalkGeometry = new THREE.PlaneGeometry(4, 0.5);
-    const crosswalkMaterial = new THREE.MeshStandardMaterial({ color: 0xffffff });
+    // 횡단보도 생성 (90도 회전: 차량 진행 방향과 평행하게)
+    // 차량은 z축 방향으로 이동하므로, 횡단보도 줄무늬도 z축 방향으로 길게
+    const roadWidth = 6; // 도로 폭 (x축 방향)
+    const stripeWidth = 0.1; // 각 흰 줄무늬의 폭 (x축 방향)
+    const stripeSpacing = 0.5; // 줄무늬 간격 (x축 방향)
+    const stripeCount = 16; // 흰 줄무늬 개수
+    const crosswalkZ = 6; // 횡단보도 중심 위치 (카메라 앞, z축)
+    const crosswalkLength = 2; // 횡단보도 길이 (z축 방향, 차량 진행 방향)
     
-    // 횡단보도 줄무늬
-    for (let i = 0; i < 8; i++) {
-      const stripe = new THREE.Mesh(crosswalkGeometry, crosswalkMaterial);
-      stripe.rotation.x = -Math.PI / 2;
-      stripe.position.set(0, 0.02, -2 + i * 0.6);
+    // 횡단보도 흰 줄무늬들 (90도 회전된 형태)
+    // 각 줄무늬는 z축 방향으로 길게 (차량 진행 방향과 평행)
+    // x축 방향으로 여러 개 배치 (도로를 가로지름)
+    for (let i = 0; i < stripeCount; i++) {
+      const stripe = new THREE.Mesh(
+        // PlaneGeometry(width, height)는 기본적으로 xy 평면
+        // rotation.x = -PI/2 후: width는 x축, height는 z축
+        // 따라서 PlaneGeometry(stripeWidth, crosswalkLength) = PlaneGeometry(0.1, 4)
+        // → x축 방향 0.1, z축 방향 4
+        new THREE.PlaneGeometry(stripeWidth, crosswalkLength),
+        new THREE.MeshStandardMaterial({ 
+          color: 0xffffff,
+          emissive: 0xffffff,
+          emissiveIntensity: 0.3 // 약간의 발광 효과
+        })
+      );
+      stripe.rotation.x = -Math.PI / 2; // 평면을 수평으로 회전
+      
+      // x축 방향으로 줄무늬들을 배치
+      // 모든 줄무늬는 같은 z 위치(crosswalkZ)에, x축 방향으로만 배치
+      const totalCrosswalkWidth = (stripeCount - 1) * (stripeWidth + stripeSpacing) + stripeWidth;
+      const startX = -totalCrosswalkWidth / 2;
+      const stripeX = startX + i * (stripeWidth + stripeSpacing) + stripeWidth / 2;
+      
+      stripe.position.set(stripeX, 0.02, crosswalkZ);
       this.scene.add(stripe);
     }
   }
@@ -222,7 +258,7 @@ class Scene3D {
     const obstacleGeometry = new THREE.BoxGeometry(1, 1, 1);
     const obstacleMaterial = new THREE.MeshStandardMaterial({ color: 0xe67e22 });
     this.obstacle = new THREE.Mesh(obstacleGeometry, obstacleMaterial);
-    this.obstacle.position.set(0, 0.5, -3); // 도로 중앙, 차량이 다가올 위치
+    this.obstacle.position.set(0, 0.5, -2); // 도로 중앙, 차량이 다가올 위치 (횡단보도 앞쪽)
     this.obstacle.castShadow = true;
     this.scene.add(this.obstacle);
   }
@@ -282,7 +318,13 @@ class Scene3D {
     // 카메라가 차량을 따라가도록 (보행자 시점 유지하면서 차량을 바라봄)
     if (this.vehicle && this.isAnimating) {
       const targetZ = this.vehiclePosition.z;
-      this.camera.lookAt(this.vehiclePosition.x, 0, targetZ);
+      // 차량이 횡단보도 근처에 있을 때만 차량을 바라봄
+      if (targetZ < 6) {
+        this.camera.lookAt(this.vehiclePosition.x, 0, targetZ);
+      } else {
+        // 차량이 멀리 있으면 횡단보도 앞을 바라봄
+        this.camera.lookAt(0, 0, 6);
+      }
     }
 
     // 응급차량 이동 (보행자 관점에서 보이도록)
@@ -296,31 +338,41 @@ class Scene3D {
   }
 
   updateVehiclePosition() {
+    // 횡단보도 앞 정지 위치 (횡단보도가 z=6, 길이=2이므로 앞쪽은 z=4)
+    const stopBeforeCrosswalk = 4;
+    
     if (this.animationType === 'stop') {
       // 정지 애니메이션: 차량이 다가오다가 횡단보도 앞에서 정지
-      if (this.vehiclePosition.z < -2) {
+      if (this.vehiclePosition.z < stopBeforeCrosswalk) {
         this.vehiclePosition.z += this.vehicleSpeed;
       } else {
-        this.vehiclePosition.z = -2;
+        this.vehiclePosition.z = stopBeforeCrosswalk; // 횡단보도 앞에서 정지
         this.isAnimating = false;
       }
     } else if (this.animationType === 'evade') {
-      // 회피 애니메이션: 차량이 다가오다가 장애물을 회피
-      if (this.vehiclePosition.z < -3) {
+      // 회피 애니메이션: 차량이 다가오다가 장애물을 회피 후 횡단보도 앞에서 정지
+      if (this.vehiclePosition.z < -2) {
+        // 장애물 전까지 진행
         this.vehiclePosition.z += this.vehicleSpeed;
-      } else if (this.vehiclePosition.z < -1) {
+      } else if (this.vehiclePosition.z < stopBeforeCrosswalk) {
+        // 장애물 회피: 오른쪽으로 이동하며 횡단보도 앞으로 진행
         this.vehiclePosition.z += this.vehicleSpeed;
-        this.vehiclePosition.x += 0.05;
+        this.vehiclePosition.x += 0.08;
       } else {
-        this.vehiclePosition.z += this.vehicleSpeed;
-        this.vehiclePosition.x -= 0.05;
+        // 횡단보도 앞에서 정지
+        this.vehiclePosition.z = stopBeforeCrosswalk;
+        if (this.vehiclePosition.x > 0) {
+          this.vehiclePosition.x -= 0.03;
+        }
+        this.isAnimating = false;
       }
     } else if (this.animationType === 'yield') {
-      // 양보 애니메이션: 차량이 다가오다가 멈추고 옆으로 이동
-      if (this.vehiclePosition.z < -2) {
+      // 양보 애니메이션: 차량이 다가오다가 횡단보도 앞에서 멈추고 옆으로 이동
+      if (this.vehiclePosition.z < stopBeforeCrosswalk) {
         this.vehiclePosition.z += this.vehicleSpeed;
-      } else if (this.vehiclePosition.z < -1.5) {
-        this.vehiclePosition.z = -2;
+      } else {
+        // 횡단보도 앞에서 정지하고 옆으로 이동
+        this.vehiclePosition.z = stopBeforeCrosswalk;
         this.vehiclePosition.x -= 0.05;
         if (this.vehiclePosition.x < -2) {
           this.vehiclePosition.x = -2;
@@ -328,8 +380,13 @@ class Scene3D {
         }
       }
     } else if (this.animationType === 'proceed') {
-      // 진행 애니메이션: 차량이 계속 진행
-      this.vehiclePosition.z += this.vehicleSpeed;
+      // 진행 애니메이션: 차량이 횡단보도 앞에서 정지
+      if (this.vehiclePosition.z < stopBeforeCrosswalk) {
+        this.vehiclePosition.z += this.vehicleSpeed;
+      } else {
+        this.vehiclePosition.z = stopBeforeCrosswalk;
+        this.isAnimating = false;
+      }
     }
 
     if (this.vehicle) {

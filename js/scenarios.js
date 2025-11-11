@@ -137,6 +137,9 @@ function createRatingTrial(scenario) {
     on_finish: function(data) {
       data.rating_value = parseInt(data.response);
       data.scenario_id = scenario.id;
+      data.scenario_title = scenario.title;
+      data.eHMI_message = scenario.eHMI_message;
+      data.eHMI_color = scenario.eHMI_color;
     }
   };
 }

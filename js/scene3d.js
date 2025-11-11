@@ -18,7 +18,8 @@ class Scene3D {
     this.emergencyVehicle = null;
     this.animationFrame = null;
     this.vehiclePosition = { x: 0, y: 0, z: -20 }; // 멀리서 다가옴
-    this.vehicleSpeed = 0.15;
+    this.vehicleSpeed = 0.15; // 기본 속도
+    this.maxSpeed = 0.15; // 최대 속도
     this.isAnimating = false;
   }
 
@@ -318,12 +319,12 @@ class Scene3D {
     // 카메라가 차량을 따라가도록 (보행자 시점 유지하면서 차량을 바라봄)
     if (this.vehicle && this.isAnimating) {
       const targetZ = this.vehiclePosition.z;
-      // 차량이 횡단보도 근처에 있을 때만 차량을 바라봄
-      if (targetZ < 6) {
+      // 차량이 도로 끝까지 진행하는 동안 계속 바라봄
+      if (targetZ < 30) {
         this.camera.lookAt(this.vehiclePosition.x, 0, targetZ);
       } else {
-        // 차량이 멀리 있으면 횡단보도 앞을 바라봄
-        this.camera.lookAt(0, 0, 6);
+        // 차량이 도로 끝에 도달하면 마지막 위치를 바라봄
+        this.camera.lookAt(this.vehiclePosition.x, 0, 30);
       }
     }
 
@@ -342,15 +343,41 @@ class Scene3D {
     const stopBeforeCrosswalk = 4;
     
     if (this.animationType === 'stop') {
-      // 정지 애니메이션: 차량이 다가오다가 횡단보도 앞에서 정지
+      // 정지 애니메이션: 차량이 다가오다가 횡단보도 앞에서 점진적으로 감속하며 정지
       if (this.vehiclePosition.z < stopBeforeCrosswalk) {
+        // 횡단보도까지의 거리 계산
+        const distanceToStop = stopBeforeCrosswalk - this.vehiclePosition.z;
+        const decelerationStartDistance = 12; // 감속 시작 거리
+        
+        // 거리에 따라 속도 조절 (가까워질수록 느려짐)
+        if (distanceToStop > decelerationStartDistance) {
+          // 멀리 있을 때는 최대 속도
+          this.vehicleSpeed = this.maxSpeed;
+        } else {
+          // 가까워질수록 속도 감소 (선형 감속)
+          // 거리가 0에 가까워질수록 속도도 0에 가까워짐
+          const decelerationFactor = distanceToStop / decelerationStartDistance;
+          this.vehicleSpeed = this.maxSpeed * decelerationFactor;
+          
+          // 최소 속도 제한 (너무 느려지지 않도록)
+          if (this.vehicleSpeed < 0.02) {
+            this.vehicleSpeed = 0.02;
+          }
+        }
+        
         this.vehiclePosition.z += this.vehicleSpeed;
+        
+        // 정지 위치에 도달했는지 확인 (매우 작은 거리 이내)
+        if (distanceToStop <= 0.05) {
+          this.vehiclePosition.z = stopBeforeCrosswalk;
+          this.isAnimating = false;
+        }
       } else {
         this.vehiclePosition.z = stopBeforeCrosswalk; // 횡단보도 앞에서 정지
         this.isAnimating = false;
       }
     } else if (this.animationType === 'evade') {
-      // 회피 애니메이션: 차량이 다가오다가 장애물을 회피 후 횡단보도 앞에서 정지
+      // 회피 애니메이션: 차량이 다가오다가 장애물을 회피 후 횡단보도 근처에서 속도 낮추고 계속 진행
       if (this.vehiclePosition.z < -2) {
         // 장애물 전까지 진행
         this.vehiclePosition.z += this.vehicleSpeed;
@@ -359,33 +386,89 @@ class Scene3D {
         this.vehiclePosition.z += this.vehicleSpeed;
         this.vehiclePosition.x += 0.08;
       } else {
-        // 횡단보도 앞에서 정지
-        this.vehiclePosition.z = stopBeforeCrosswalk;
+        // 횡단보도 근처에서 속도 낮추고 계속 진행
+        const distanceToCrosswalk = this.vehiclePosition.z - stopBeforeCrosswalk;
+        const slowDownDistance = 4; // 감속 구간
+        const slowSpeedFactor = 0.5; // 감속된 속도 비율 (최대 속도의 50%)
+        
+        if (distanceToCrosswalk < slowDownDistance) {
+          // 횡단보도 근처에서 속도 감소
+          const speedFactor = slowSpeedFactor + (distanceToCrosswalk / slowDownDistance) * (1 - slowSpeedFactor); // 0.5 ~ 1.0
+          this.vehicleSpeed = this.maxSpeed * speedFactor;
+        } else {
+          // 횡단보도 통과 후에도 낮춘 속도 유지
+          this.vehicleSpeed = this.maxSpeed * slowSpeedFactor;
+        }
+        
+        // 중앙으로 복귀
         if (this.vehiclePosition.x > 0) {
           this.vehiclePosition.x -= 0.03;
         }
-        this.isAnimating = false;
+        
+        this.vehiclePosition.z += this.vehicleSpeed;
+        
+        // 끝까지 진행 (도로 끝까지)
+        if (this.vehiclePosition.z > 30) {
+          this.isAnimating = false;
+        }
       }
     } else if (this.animationType === 'yield') {
-      // 양보 애니메이션: 차량이 다가오다가 횡단보도 앞에서 멈추고 옆으로 이동
+      // 양보 애니메이션: 차량이 다가오다가 횡단보도 근처에서 속도 낮추고 계속 진행
       if (this.vehiclePosition.z < stopBeforeCrosswalk) {
         this.vehiclePosition.z += this.vehicleSpeed;
       } else {
-        // 횡단보도 앞에서 정지하고 옆으로 이동
-        this.vehiclePosition.z = stopBeforeCrosswalk;
+        // 횡단보도 근처에서 속도 낮추고 계속 진행
+        const distanceToCrosswalk = this.vehiclePosition.z - stopBeforeCrosswalk;
+        const slowDownDistance = 4; // 감속 구간
+        const slowSpeedFactor = 0.5; // 감속된 속도 비율 (최대 속도의 50%)
+        
+        if (distanceToCrosswalk < slowDownDistance) {
+          // 횡단보도 근처에서 속도 감소
+          const speedFactor = slowSpeedFactor + (distanceToCrosswalk / slowDownDistance) * (1 - slowSpeedFactor); // 0.5 ~ 1.0
+          this.vehicleSpeed = this.maxSpeed * speedFactor;
+        } else {
+          // 횡단보도 통과 후에도 낮춘 속도 유지
+          this.vehicleSpeed = this.maxSpeed * slowSpeedFactor;
+        }
+        
+        // 옆으로 이동 (양보)
         this.vehiclePosition.x -= 0.05;
         if (this.vehiclePosition.x < -2) {
           this.vehiclePosition.x = -2;
+        }
+        
+        this.vehiclePosition.z += this.vehicleSpeed;
+        
+        // 끝까지 진행 (도로 끝까지)
+        if (this.vehiclePosition.z > 30) {
           this.isAnimating = false;
         }
       }
     } else if (this.animationType === 'proceed') {
-      // 진행 애니메이션: 차량이 횡단보도 앞에서 정지
+      // 진행 애니메이션: 차량이 횡단보도 근처에서 속도 낮추고 계속 진행
       if (this.vehiclePosition.z < stopBeforeCrosswalk) {
         this.vehiclePosition.z += this.vehicleSpeed;
       } else {
-        this.vehiclePosition.z = stopBeforeCrosswalk;
-        this.isAnimating = false;
+        // 횡단보도 근처에서 속도 낮추고 계속 진행
+        const distanceToCrosswalk = this.vehiclePosition.z - stopBeforeCrosswalk;
+        const slowDownDistance = 4; // 감속 구간
+        const slowSpeedFactor = 0.5; // 감속된 속도 비율 (최대 속도의 50%)
+        
+        if (distanceToCrosswalk < slowDownDistance) {
+          // 횡단보도 근처에서 속도 감소
+          const speedFactor = slowSpeedFactor + (distanceToCrosswalk / slowDownDistance) * (1 - slowSpeedFactor); // 0.5 ~ 1.0
+          this.vehicleSpeed = this.maxSpeed * speedFactor;
+        } else {
+          // 횡단보도 통과 후에도 낮춘 속도 유지
+          this.vehicleSpeed = this.maxSpeed * slowSpeedFactor;
+        }
+        
+        this.vehiclePosition.z += this.vehicleSpeed;
+        
+        // 끝까지 진행 (도로 끝까지)
+        if (this.vehiclePosition.z > 30) {
+          this.isAnimating = false;
+        }
       }
     }
 

@@ -197,10 +197,14 @@ body {
   font-size: 16px;
   margin-top: 25px;
   padding: 15px;
+  gap: 30px;
   background-color: #ebf5fb;
   border-radius: 5px;
 }
 
+.rating-instruction span {
+  margin: 5px;
+}
 /* 종료 화면 */
 .end-container {
   max-width: 800px;
@@ -293,10 +297,53 @@ body {
   font-size: 16px;
 }
 
+.results-table th:first-child,
+.results-table td:first-child {
+  text-align: center;
+  width: 60px;
+}
+
 .results-table td {
   padding: 15px;
   border-bottom: 1px solid #e0e0e0;
   font-size: 15px;
+  vertical-align: middle;
+}
+
+.scenario-number {
+  font-weight: bold;
+  color: #3498db;
+  font-size: 18px;
+}
+
+.scenario-name {
+  font-weight: 500;
+  color: #2c3e50;
+}
+
+.rating-text {
+  font-weight: 500;
+  font-size: 14px;
+}
+
+.rating-text.rating-very-high {
+  color: #27ae60;
+}
+
+.rating-text.rating-high {
+  color: #2ecc71;
+}
+
+.rating-text.rating-medium {
+  color: #f39c12;
+}
+
+.rating-text.rating-low {
+  color: #e67e22;
+}
+
+.rating-text.rating-very-low {
+  color: #e74c3c;
 }
 
 .results-table tbody tr:hover {

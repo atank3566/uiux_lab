@@ -59,15 +59,38 @@ const end_trial = {
     }
     
     // 결과 테이블 생성
-    let resultsTable = '<table class="results-table"><thead><tr><th>시나리오</th><th>eHMI 메시지</th><th>신뢰도 점수</th></tr></thead><tbody>';
+    let resultsTable = '<table class="results-table"><thead><tr><th>번호</th><th>시나리오</th><th>eHMI 메시지</th><th>신뢰도 점수</th><th>평가</th></tr></thead><tbody>';
     
     results.ratings.forEach((result, index) => {
       const colorClass = `eHMI-${result.eHMI_color}`;
+      let ratingText = '';
+      let ratingClass = '';
+      
+      // 점수에 따른 평가 텍스트
+      if (result.rating === 5) {
+        ratingText = '매우 신뢰 가능';
+        ratingClass = 'rating-very-high';
+      } else if (result.rating === 4) {
+        ratingText = '신뢰 가능';
+        ratingClass = 'rating-high';
+      } else if (result.rating === 3) {
+        ratingText = '보통';
+        ratingClass = 'rating-medium';
+      } else if (result.rating === 2) {
+        ratingText = '신뢰 어려움';
+        ratingClass = 'rating-low';
+      } else {
+        ratingText = '전혀 신뢰 불가';
+        ratingClass = 'rating-very-low';
+      }
+      
       resultsTable += `
         <tr>
-          <td>${index + 1}. ${result.scenario_title}</td>
+          <td class="scenario-number">${index + 1}</td>
+          <td class="scenario-name">${result.scenario_title}</td>
           <td><span class="eHMI-badge ${colorClass}">${result.eHMI_message}</span></td>
           <td class="rating-score">${result.rating} / 5</td>
+          <td class="rating-text ${ratingClass}">${ratingText}</td>
         </tr>
       `;
     });

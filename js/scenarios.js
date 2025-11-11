@@ -124,7 +124,7 @@ function createRatingTrial(scenario) {
         <div class="rating-options">
           <p><strong>이 자율주행차의 eHMI 메시지를 보고 얼마나 신뢰할 수 있다고 느꼈나요?</strong></p>
           <p class="rating-scale">1 (전혀 신뢰 불가) → 5 (매우 신뢰 가능)</p>
-          <p class="rating-instruction">[1][2][3][4][5] 키 중 하나를 눌러 선택하세요.</p>
+          <p class="rating-instruction"><span class="key-number">[1]</span><span class="key-number">[2]</span><span class="key-number">[3]</span><span class="key-number">[4]</span><span class="key-number">[5]</span> 키 중 하나를 눌러 선택하세요.</p>
         </div>
       </div>
     `,

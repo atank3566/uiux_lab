@@ -11,12 +11,13 @@ const intro_trial = {
       <h1>자율주행차 eHMI 시나리오 실험</h1>
       <div class="intro-content">
         <h2>실험 안내</h2>
-        <p>이 실험에서는 자율주행차의 eHMI(External Human-Machine Interface) 메시지를 보시고 평가해주시면 됩니다.</p>
+        <p>이 실험에서는 <strong>보행자 관점</strong>에서 자율주행차의 eHMI(External Human-Machine Interface) 메시지를 보시고 평가해주시면 됩니다.</p>
         
         <h3>실험 절차</h3>
         <ol>
-          <li>각 시나리오에서 자율주행차의 eHMI 메시지를 확인합니다.</li>
-          <li>메시지를 본 후, 신뢰도에 대해 평가합니다.</li>
+          <li>당신은 횡단보도 옆에 서 있는 보행자입니다.</li>
+          <li>각 시나리오에서 자율주행차가 다가오며 표시하는 eHMI 메시지를 확인합니다.</li>
+          <li>차량의 행동과 메시지를 본 후, 신뢰도에 대해 평가합니다.</li>
           <li>총 ${eHMI_SCENARIOS.length}개의 시나리오가 제시됩니다.</li>
         </ol>
         

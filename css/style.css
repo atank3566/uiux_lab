@@ -230,6 +230,322 @@ body {
   font-style: italic;
 }
 
+/* 3D 장면 컨테이너 */
+.scene3d-container {
+  width: 100%;
+  height: 400px;
+  margin: 30px auto;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+  background: #87CEEB;
+}
+
+.scene3d-container canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* 도로 장면 (2D - 백업용) */
+.road-scene {
+  position: relative;
+  width: 100%;
+  height: 300px;
+  background: linear-gradient(to bottom, #87CEEB 0%, #87CEEB 40%, #2d5016 40%, #2d5016 60%, #555 60%, #555 100%);
+  margin: 30px auto;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+}
+
+.road {
+  position: absolute;
+  width: 100%;
+  height: 40%;
+  top: 50%;
+  transform: translateY(-50%);
+  background: #333;
+  border-top: 3px dashed #ffeb3b;
+  border-bottom: 3px dashed #ffeb3b;
+}
+
+.road-lines {
+  position: absolute;
+  width: 100%;
+  height: 2px;
+  background: repeating-linear-gradient(
+    to right,
+    #ffeb3b 0px,
+    #ffeb3b 30px,
+    transparent 30px,
+    transparent 60px
+  );
+  top: 50%;
+  transform: translateY(-50%);
+  animation: roadMove 1s linear infinite;
+}
+
+.road-lines:nth-child(2) {
+  top: 30%;
+}
+
+.road-lines:nth-child(3) {
+  top: 70%;
+}
+
+@keyframes roadMove {
+  from {
+    transform: translateY(-50%) translateX(0);
+  }
+  to {
+    transform: translateY(-50%) translateX(60px);
+  }
+}
+
+/* 차량 */
+.vehicle {
+  position: absolute;
+  width: 120px;
+  height: 80px;
+  bottom: 20%;
+  left: -150px;
+  z-index: 10;
+}
+
+.vehicle-body {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #3498db, #2980b9);
+  border-radius: 10px 10px 5px 5px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+}
+
+.vehicle-window {
+  position: absolute;
+  width: 60%;
+  height: 40%;
+  top: 15%;
+  left: 20%;
+  background: rgba(200, 220, 240, 0.8);
+  border-radius: 5px;
+  border: 2px solid #2980b9;
+}
+
+.vehicle-wheels {
+  position: absolute;
+  width: 100%;
+  bottom: -10px;
+}
+
+.wheel {
+  position: absolute;
+  width: 25px;
+  height: 25px;
+  background: #222;
+  border-radius: 50%;
+  border: 3px solid #444;
+}
+
+.wheel-front {
+  left: 20px;
+  animation: wheelRotate 0.3s linear infinite;
+}
+
+.wheel-back {
+  right: 20px;
+  animation: wheelRotate 0.3s linear infinite;
+}
+
+@keyframes wheelRotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* 차량 이동 애니메이션 */
+.vehicle-move.animate {
+  animation: vehicleMove 3s ease-in-out forwards;
+}
+
+.vehicle-stop.animate {
+  animation: vehicleStop 3s ease-in-out forwards;
+}
+
+.vehicle-evade.animate {
+  animation: vehicleEvade 3s ease-in-out forwards;
+}
+
+.vehicle-yield.animate {
+  animation: vehicleYield 3s ease-in-out forwards;
+}
+
+.vehicle-proceed.animate {
+  animation: vehicleProceed 3s linear forwards;
+}
+
+@keyframes vehicleMove {
+  0% {
+    left: -150px;
+  }
+  100% {
+    left: calc(100% + 50px);
+  }
+}
+
+@keyframes vehicleStop {
+  0% {
+    left: -150px;
+  }
+  50% {
+    left: 40%;
+  }
+  100% {
+    left: 40%;
+  }
+}
+
+@keyframes vehicleEvade {
+  0% {
+    left: -150px;
+  }
+  40% {
+    left: 35%;
+    transform: translateX(0);
+  }
+  50% {
+    left: 35%;
+    transform: translateX(50px) translateY(-20px);
+  }
+  60% {
+    left: 35%;
+    transform: translateX(50px) translateY(0);
+  }
+  100% {
+    left: calc(100% + 50px);
+  }
+}
+
+@keyframes vehicleYield {
+  0% {
+    left: -150px;
+  }
+  45% {
+    left: 35%;
+    transform: translateX(0);
+  }
+  55% {
+    left: 35%;
+    transform: translateX(-80px);
+  }
+  100% {
+    left: 35%;
+    transform: translateX(-80px);
+  }
+}
+
+@keyframes vehicleProceed {
+  0% {
+    left: -150px;
+  }
+  100% {
+    left: calc(100% + 50px);
+  }
+}
+
+/* 보행자 */
+.pedestrian {
+  position: absolute;
+  width: 30px;
+  height: 50px;
+  bottom: 15%;
+  left: 45%;
+  background: #e74c3c;
+  border-radius: 5px;
+  animation: pedestrianWalk 2s ease-in-out infinite;
+  z-index: 5;
+}
+
+.pedestrian::before {
+  content: '';
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  top: -15px;
+  left: 5px;
+  background: #fff;
+  border-radius: 50%;
+}
+
+@keyframes pedestrianWalk {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+/* 장애물 */
+.obstacle {
+  position: absolute;
+  width: 60px;
+  height: 60px;
+  bottom: 18%;
+  left: 50%;
+  background: #e67e22;
+  border-radius: 5px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+  z-index: 5;
+  animation: obstacleAppear 0.5s ease-out;
+}
+
+@keyframes obstacleAppear {
+  from {
+    opacity: 0;
+    transform: scale(0);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* 응급차량 */
+.emergency-vehicle {
+  position: absolute;
+  width: 100px;
+  height: 70px;
+  bottom: 18%;
+  right: -120px;
+  background: linear-gradient(135deg, #e74c3c, #c0392b);
+  border-radius: 8px;
+  z-index: 8;
+  animation: emergencyApproach 3s ease-in forwards;
+}
+
+.emergency-vehicle::before {
+  content: '🚑';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 30px;
+}
+
+@keyframes emergencyApproach {
+  0% {
+    right: -120px;
+  }
+  100% {
+    right: 45%;
+  }
+}
+
 /* 애니메이션 */
 @keyframes fadeIn {
   from {

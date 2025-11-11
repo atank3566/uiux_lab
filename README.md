@@ -9,6 +9,7 @@ lab/
 ├── index.html          # 메인 HTML 파일
 ├── js/
 │   ├── config.js       # 실험 설정 및 초기화
+│   ├── scene3d.js      # 3D 장면 렌더링
 │   ├── scenarios.js    # eHMI 시나리오 정의
 │   └── main.js         # 메인 실험 로직
 ├── css/
@@ -20,6 +21,7 @@ lab/
 
 ### index.html
 - jsPsych 라이브러리 및 플러그인 로드
+- Three.js 라이브러리 로드
 - 커스텀 스타일시트 연결
 - JavaScript 파일들 로드
 
@@ -27,6 +29,11 @@ lab/
 - jsPsych 초기화 설정
 - 실험 전역 설정 상수 (EXPERIMENT_CONFIG)
 - 데이터 저장 함수
+
+### js/scene3d.js
+- Three.js를 사용한 3D 장면 렌더링
+- 도로, 횡단보도, 차량, 보행자 등 3D 객체 생성
+- 차량 애니메이션 및 카메라 제어
 
 ### js/scenarios.js
 - eHMI 시나리오 데이터 정의 (eHMI_SCENARIOS)
@@ -36,7 +43,7 @@ lab/
 ### js/main.js
 - 실험 타임라인 구성
 - 소개 화면, 시나리오, 평가, 종료 화면 정의
-- 실험 실행
+- 실험 실행 및 결과 표시
 
 ### css/style.css
 - 전체 실험 UI 스타일링

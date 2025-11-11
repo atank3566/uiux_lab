@@ -3,16 +3,33 @@
  * eHMI 시나리오 실험의 전역 설정을 관리합니다.
  */
 
+// 실험 결과를 저장할 전역 변수
+window.experimentResults = null;
+
 // jsPsych 초기화 설정
 const jsPsych = initJsPsych({
   display_element: 'jspsych-experiment',
   on_finish: function() {
-    // 실험 종료 시 데이터 표시
-    jsPsych.data.displayData();
-    
-    // 데이터를 JSON으로 다운로드 가능하게 설정
+    // 실험 데이터 수집
     const data = jsPsych.data.get().json();
     console.log('실험 데이터:', data);
+    
+    // 평가 결과 추출
+    const ratings = data.filter(trial => trial.trial_type === 'trust_rating');
+    const results = ratings.map(rating => ({
+      scenario_id: rating.scenario_id,
+      scenario_title: rating.scenario_title || eHMI_SCENARIOS.find(s => s.id === rating.scenario_id)?.title || '알 수 없음',
+      rating: rating.rating_value,
+      eHMI_message: rating.eHMI_message,
+      eHMI_color: rating.eHMI_color
+    }));
+    
+    // 전역 변수에 저장
+    window.experimentResults = {
+      allData: data,
+      ratings: results,
+      averageRating: results.length > 0 ? (results.reduce((sum, r) => sum + r.rating, 0) / results.length).toFixed(2) : 0
+    };
     
     // 필요시 여기서 데이터를 서버로 전송할 수 있습니다
     // saveDataToServer(data);

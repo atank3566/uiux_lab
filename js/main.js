@@ -41,18 +41,72 @@ const intro_trial = {
 // 실험 종료 화면
 const end_trial = {
   type: jsPsychHtmlKeyboardResponse,
-  stimulus: `
-    <div class="end-container">
-      <h1>실험이 종료되었습니다</h1>
-      <div class="end-content">
-        <p>참여해주셔서 감사합니다!</p>
-        <p>실험 데이터는 자동으로 저장되었습니다.</p>
-        <p class="end-note">이 페이지를 닫으셔도 됩니다.</p>
+  stimulus: function() {
+    // 결과 데이터 가져오기
+    const results = window.experimentResults;
+    
+    if (!results || !results.ratings || results.ratings.length === 0) {
+      return `
+        <div class="end-container">
+          <h1>실험이 종료되었습니다</h1>
+          <div class="end-content">
+            <p>참여해주셔서 감사합니다!</p>
+            <p>실험 데이터는 자동으로 저장되었습니다.</p>
+            <button class="restart-button" onclick="location.reload()">다시 하기</button>
+          </div>
+        </div>
+      `;
+    }
+    
+    // 결과 테이블 생성
+    let resultsTable = '<table class="results-table"><thead><tr><th>시나리오</th><th>eHMI 메시지</th><th>신뢰도 점수</th></tr></thead><tbody>';
+    
+    results.ratings.forEach((result, index) => {
+      const colorClass = `eHMI-${result.eHMI_color}`;
+      resultsTable += `
+        <tr>
+          <td>${index + 1}. ${result.scenario_title}</td>
+          <td><span class="eHMI-badge ${colorClass}">${result.eHMI_message}</span></td>
+          <td class="rating-score">${result.rating} / 5</td>
+        </tr>
+      `;
+    });
+    
+    resultsTable += '</tbody></table>';
+    
+    // 평균 점수 표시
+    const averageRating = parseFloat(results.averageRating);
+    let averageText = '';
+    if (averageRating >= 4) {
+      averageText = '<p class="average-rating high">평균 신뢰도: <strong>' + averageRating + ' / 5</strong> (높음)</p>';
+    } else if (averageRating >= 3) {
+      averageText = '<p class="average-rating medium">평균 신뢰도: <strong>' + averageRating + ' / 5</strong> (보통)</p>';
+    } else {
+      averageText = '<p class="average-rating low">평균 신뢰도: <strong>' + averageRating + ' / 5</strong> (낮음)</p>';
+    }
+    
+    return `
+      <div class="end-container">
+        <h1>실험이 종료되었습니다</h1>
+        <div class="end-content">
+          <p>참여해주셔서 감사합니다!</p>
+          
+          <div class="results-section">
+            <h2>실험 결과</h2>
+            ${averageText}
+            ${resultsTable}
+          </div>
+          
+          <div class="button-group">
+            <button class="restart-button" onclick="location.reload()">다시 하기</button>
+            <button class="download-button" onclick="downloadResults()">결과 다운로드</button>
+          </div>
+        </div>
       </div>
-    </div>
-  `,
+    `;
+  },
   choices: "NO_KEYS",
-  trial_duration: 3000,
+  trial_duration: null, // 무제한 (버튼으로 종료)
   data: {
     trial_type: 'end'
   }
@@ -78,5 +132,22 @@ if (typeof jsPsychHtmlKeyboardResponse === 'undefined') {
   }
   
   jsPsych.run(timeline);
+}
+
+// 결과 다운로드 함수
+function downloadResults() {
+  if (!window.experimentResults) {
+    alert('다운로드할 결과가 없습니다.');
+    return;
+  }
+  
+  const dataStr = JSON.stringify(window.experimentResults.allData, null, 2);
+  const dataBlob = new Blob([dataStr], { type: 'application/json' });
+  const url = URL.createObjectURL(dataBlob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = 'experiment-results-' + Date.now() + '.json';
+  link.click();
+  URL.revokeObjectURL(url);
 }
 

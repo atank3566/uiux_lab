@@ -1,0 +1,263 @@
+/**
+ * eHMI 시나리오 실험 스타일시트
+ */
+
+/* 기본 스타일 */
+body {
+  font-family: 'Malgun Gothic', '맑은 고딕', Arial, sans-serif;
+  background-color: #f5f5f5;
+}
+
+/* 소개 화면 */
+.intro-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 40px;
+  background-color: white;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.intro-container h1 {
+  color: #2c3e50;
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.intro-content h2 {
+  color: #34495e;
+  border-bottom: 2px solid #3498db;
+  padding-bottom: 10px;
+  margin-top: 30px;
+}
+
+.intro-content h3 {
+  color: #555;
+  margin-top: 20px;
+}
+
+.intro-content ol,
+.intro-content ul {
+  line-height: 1.8;
+  color: #555;
+}
+
+.intro-content li {
+  margin: 10px 0;
+}
+
+.warning-text {
+  color: #e74c3c;
+  font-weight: bold;
+  margin-top: 20px;
+  padding: 15px;
+  background-color: #ffe6e6;
+  border-left: 4px solid #e74c3c;
+  border-radius: 4px;
+}
+
+.start-text {
+  text-align: center;
+  font-size: 18px;
+  font-weight: bold;
+  color: #27ae60;
+  margin-top: 30px;
+  padding: 20px;
+  background-color: #e8f8f5;
+  border-radius: 5px;
+}
+
+/* 시나리오 컨테이너 */
+.scenario-container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 30px;
+  background-color: white;
+  border-radius: 10px;
+  box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+}
+
+.scenario-title {
+  text-align: center;
+  color: #2c3e50;
+  margin-bottom: 30px;
+  font-size: 28px;
+}
+
+.scenario-content {
+  text-align: center;
+}
+
+.scenario-image {
+  margin-bottom: 30px;
+}
+
+.scenario-image img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+/* eHMI 메시지 스타일 */
+.eHMI-message {
+  padding: 25px;
+  margin: 30px auto;
+  border-radius: 10px;
+  max-width: 600px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  animation: fadeIn 0.5s ease-in;
+}
+
+.eHMI-text {
+  font-size: 24px;
+  font-weight: bold;
+  margin: 0;
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+}
+
+.eHMI-green {
+  background: linear-gradient(135deg, #27ae60, #2ecc71);
+  color: white;
+}
+
+.eHMI-orange {
+  background: linear-gradient(135deg, #f39c12, #e67e22);
+  color: white;
+}
+
+.eHMI-red {
+  background: linear-gradient(135deg, #e74c3c, #c0392b);
+  color: white;
+}
+
+.eHMI-blue {
+  background: linear-gradient(135deg, #3498db, #2980b9);
+  color: white;
+}
+
+.scenario-context {
+  margin-top: 25px;
+  font-size: 16px;
+  color: #555;
+  line-height: 1.6;
+}
+
+.prompt-text {
+  text-align: center;
+  color: #7f8c8d;
+  font-style: italic;
+  margin-top: 20px;
+}
+
+/* 평가 화면 */
+.rating-container {
+  max-width: 700px;
+  margin: 0 auto;
+  padding: 40px;
+  background-color: white;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.rating-container h3 {
+  text-align: center;
+  color: #2c3e50;
+  margin-bottom: 25px;
+  font-size: 24px;
+}
+
+.rating-question {
+  text-align: center;
+  color: #555;
+  margin-bottom: 30px;
+  font-size: 16px;
+}
+
+.rating-options {
+  text-align: center;
+}
+
+.rating-options strong {
+  display: block;
+  font-size: 18px;
+  color: #2c3e50;
+  margin-bottom: 15px;
+}
+
+.rating-scale {
+  color: #7f8c8d;
+  font-size: 14px;
+  margin: 20px 0;
+}
+
+.rating-instruction {
+  color: #3498db;
+  font-weight: bold;
+  font-size: 16px;
+  margin-top: 25px;
+  padding: 15px;
+  background-color: #ebf5fb;
+  border-radius: 5px;
+}
+
+/* 종료 화면 */
+.end-container {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 40px;
+  background-color: white;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  text-align: center;
+}
+
+.end-container h1 {
+  color: #27ae60;
+  margin-bottom: 25px;
+}
+
+.end-content p {
+  font-size: 16px;
+  color: #555;
+  margin: 15px 0;
+  line-height: 1.6;
+}
+
+.end-note {
+  margin-top: 30px;
+  color: #7f8c8d;
+  font-style: italic;
+}
+
+/* 애니메이션 */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+  .intro-container,
+  .scenario-container,
+  .rating-container,
+  .end-container {
+    padding: 20px;
+    margin: 10px;
+  }
+  
+  .eHMI-text {
+    font-size: 18px;
+  }
+  
+  .scenario-title {
+    font-size: 22px;
+  }
+}
+

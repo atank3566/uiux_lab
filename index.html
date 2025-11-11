@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>eHMI 시나리오 실험</title>
+  
+  <!-- jsPsych 라이브러리 -->
+  <link href="https://unpkg.com/jspsych@7.3.1/css/jspsych.css" rel="stylesheet" />
+  <!-- 커스텀 스타일 -->
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div id="jspsych-experiment"></div>
+  
+  <!-- jsPsych 라이브러리 및 플러그인 -->
+  <script src="https://unpkg.com/jspsych@7.3.1"></script>
+  <script src="https://unpkg.com/@jspsych/plugin-html-keyboard-response@1.1.1"></script>
+  
+  <!-- 실험 설정 -->
+  <script src="js/config.js"></script>
+  <!-- 시나리오 정의 -->
+  <script src="js/scenarios.js"></script>
+  <!-- 메인 실험 로직 -->
+  <script src="js/main.js"></script>
+</html>
